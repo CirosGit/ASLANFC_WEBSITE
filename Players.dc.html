@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:#0a0a0b;color:#f4f4f3;font-family:'Hanken Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+  ::selection{background:rgba(201,162,75,0.3);color:#fff;}
+  a{color:#e3c277;text-decoration:none;}
+  a:hover{color:#f1d391;}
+</style>
+</helmet>
+<div style="background:#0a0a0b;overflow-x:hidden;">
+  <dc-import name="Nav" active="players" solid="true" hint-size="100%,74px"></dc-import>
+
+  <section style="position:relative;padding:160px 30px 60px;background:linear-gradient(180deg,#0f0f13,#0a0a0b);border-bottom:1px solid rgba(255,255,255,0.06);overflow:hidden;">
+    <img src="assets/aslan-logo.png" alt="" style="position:absolute;right:-70px;top:50%;transform:translateY(-50%);height:420px;opacity:0.05;pointer-events:none;"/>
+    <div style="max-width:1340px;margin:0 auto;position:relative;">
+      <div data-reveal="1" style="opacity:0;font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.22em;color:#c9a24b;text-transform:uppercase;display:flex;align-items:center;gap:12px;"><span style="width:28px;height:1px;background:#c9a24b;"></span>First team squad</div>
+      <h1 data-reveal="1" data-delay="80" style="opacity:0;margin:20px 0 0;font-size:clamp(44px,6vw,84px);line-height:0.96;font-weight:800;letter-spacing:-0.025em;color:#f4f4f3;">Meet the roster.</h1>
+      <p data-reveal="1" data-delay="170" style="opacity:0;margin:24px 0 0;font-size:19px;line-height:1.6;color:#b4b4ba;max-width:600px;">The players carrying the crest this season.</p>
+    </div>
+  </section>
+
+  <!-- ROSTER LIST -->
+  <section style="max-width:900px;margin:0 auto;padding:50px 30px 110px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 48px;">
+      <sc-for list="{{ shown }}" as="p" hint-placeholder-count="20">
+        <div data-reveal="1" data-dir="{{ p.dir }}" data-delay="{{ p.delay }}" style="opacity:0;display:flex;align-items:center;gap:16px;padding:18px 4px;border-bottom:1px solid rgba(255,255,255,0.08);">
+          <span style="width:8px;height:8px;border-radius:50%;background:#c9a24b;flex-shrink:0;"></span>
+          <span style="font-size:18px;font-weight:700;color:#f4f4f3;">{{ p.name }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin-top:24px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.08em;color:#6c6c72;">Last updated: July 10, 2026 · 8:24 PM</div>
+  </section>
+
+  <dc-import name="Footer" hint-size="100%,420px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1340,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { filter: 'ALL' };
+  reveal(el) {
+    if (el._r) return;
+    el._r = true;
+    const d = parseInt(el.getAttribute('data-delay') || '0', 10);
+    const dir = el.getAttribute('data-dir') || 'up';
+    const from = dir === 'left' ? { opacity: 0, transform: 'translateX(-40px)' }
+      : dir === 'right' ? { opacity: 0, transform: 'translateX(40px)' }
+      : dir === 'scale' ? { opacity: 0, transform: 'translateY(22px) scale(0.94)' }
+      : { opacity: 0, transform: 'translateY(26px)' };
+    const a = el._anim = el.animate(
+      [from, { opacity: 1, transform: 'none' }],
+      { duration: 800, delay: d, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'both' }
+    );
+    a.onfinish = () => { el.style.opacity = '1'; el.style.transform = 'none'; };
+  }
+  setup() {
+    const io = new IntersectionObserver((ents) => {
+      ents.forEach((e) => { if (e.isIntersecting) { this.reveal(e.target); io.unobserve(e.target); } });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
+    document.querySelectorAll('[data-reveal]').forEach((el) => { if (!el._r) io.observe(el); });
+  }
+  componentDidMount() {
+    requestAnimationFrame(() => requestAnimationFrame(() => this.setup()));
+    this._t = setTimeout(() => this.setup(), 600);
+    this._s = setTimeout(() => { document.querySelectorAll('[data-reveal]').forEach((el) => { if (el._r) return; const r = el.getBoundingClientRect(); if (r.top < window.innerHeight && r.bottom > 0) { if (el._anim) { try { el._anim.cancel(); } catch (e) {} } el.style.opacity = '1'; el.style.transform = 'none'; el._r = true; } }); }, 1800);
+  }
+  renderVals() {
+    const names = [
+      'Juan Eslava', 'Jose Arevalo', 'Carlos', 'Oscar Azocar', 'Ruben Ramos',
+      'Julian Millan', 'Felipe Millan', 'Sergio Decastro', 'Camilo Barajas', 'Saul',
+      'Frodo', 'Claudio', 'Juan Eslava', 'Yulian', 'Jesus',
+      'Adam', 'Cesar', 'Allison', 'Miguel', 'Jesus Daniel',
+    ];
+    const shown = names.map((name, i) => ({ name, delay: String((i % 10) * 40), dir: i % 2 === 0 ? 'left' : 'right' }));
+    return { shown };
+  }
+}
+</script>
+</body>
+</html>

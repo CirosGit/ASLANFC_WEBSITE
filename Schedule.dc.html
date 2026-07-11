@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:#0a0a0b;color:#f4f4f3;font-family:'Hanken Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+  ::selection{background:rgba(201,162,75,0.3);color:#fff;}
+  a{color:#e3c277;text-decoration:none;}
+  a:hover{color:#f1d391;}
+</style>
+</helmet>
+<div style="background:#0a0a0b;overflow-x:hidden;">
+  <dc-import name="Nav" active="schedule" solid="true" hint-size="100%,74px"></dc-import>
+
+  <section style="position:relative;padding:160px 30px 60px;background:linear-gradient(180deg,#0f0f13,#0a0a0b);border-bottom:1px solid rgba(255,255,255,0.06);overflow:hidden;">
+    <img src="assets/aslan-logo.png" alt="" style="position:absolute;right:-70px;top:50%;transform:translateY(-50%);height:420px;opacity:0.05;pointer-events:none;"/>
+    <div style="max-width:1340px;margin:0 auto;position:relative;">
+      <div data-reveal="1" style="opacity:0;font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.22em;color:#c9a24b;text-transform:uppercase;display:flex;align-items:center;gap:12px;"><span style="width:28px;height:1px;background:#c9a24b;"></span>Training &amp; fixtures</div>
+      <h1 data-reveal="1" data-delay="80" style="opacity:0;margin:20px 0 0;font-size:clamp(44px,6vw,84px);line-height:0.96;font-weight:800;letter-spacing:-0.025em;color:#f4f4f3;">The schedule.</h1>
+      <p data-reveal="1" data-delay="170" style="opacity:0;margin:24px 0 0;font-size:19px;line-height:1.6;color:#b4b4ba;max-width:600px;">Where and when the pride trains.</p>
+    </div>
+  </section>
+
+  <!-- TRAINING -->
+  <section style="max-width:1000px;margin:0 auto;padding:60px 30px 30px;">
+    <div data-reveal="1" data-dir="left" style="opacity:0;background:#151518;border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:40px;">
+      <div style="font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.14em;color:#c9a24b;text-transform:uppercase;">Training sessions</div>
+      <h2 style="margin:14px 0 0;font-size:28px;font-weight:800;color:#f4f4f3;">Monday – Thursday, 7:00 PM</h2>
+      <p style="margin:14px 0 0;font-size:16px;line-height:1.6;color:#9b9ba1;">Heroes Park, Lake Nona<br/>14086 Centerline Dr, Orlando, FL 32827</p>
+    </div>
+  </section>
+
+  <!-- NO GAMES YET -->
+  <section style="max-width:1000px;margin:0 auto;padding:20px 30px 100px;">
+    <div data-reveal="1" data-dir="right" data-delay="120" style="opacity:0;text-align:center;border:1px dashed rgba(255,255,255,0.14);border-radius:20px;padding:50px 30px;">
+      <div style="font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.14em;color:#6c6c72;text-transform:uppercase;">Fixtures</div>
+      <p style="margin:14px 0 0;font-size:17px;color:#b4b4ba;">No upcoming official games just yet — check back soon.</p>
+    </div>
+  </section>
+
+  <dc-import name="Footer" hint-size="100%,420px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1100,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { tab: 'UPCOMING' };
+  reveal(el) {
+    if (el._r) return;
+    el._r = true;
+    const d = parseInt(el.getAttribute('data-delay') || '0', 10);
+    const dir = el.getAttribute('data-dir') || 'up';
+    const from = dir === 'left' ? { opacity: 0, transform: 'translateX(-40px)' }
+      : dir === 'right' ? { opacity: 0, transform: 'translateX(40px)' }
+      : dir === 'scale' ? { opacity: 0, transform: 'translateY(22px) scale(0.94)' }
+      : { opacity: 0, transform: 'translateY(22px)' };
+    const a = el._anim = el.animate(
+      [from, { opacity: 1, transform: 'none' }],
+      { duration: 700, delay: d, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'both' }
+    );
+    a.onfinish = () => { el.style.opacity = '1'; el.style.transform = 'none'; };
+  }
+  setup() {
+    const io = new IntersectionObserver((ents) => {
+      ents.forEach((e) => { if (e.isIntersecting) { this.reveal(e.target); io.unobserve(e.target); } });
+    }, { threshold: 0.1, rootMargin: '0px 0px -4% 0px' });
+    document.querySelectorAll('[data-reveal]').forEach((el) => { if (!el._r) io.observe(el); });
+  }
+  componentDidMount() {
+    requestAnimationFrame(() => requestAnimationFrame(() => this.setup()));
+    this._t = setTimeout(() => this.setup(), 600);
+    this._s = setTimeout(() => { document.querySelectorAll('[data-reveal]').forEach((el) => { if (el._r) return; const r = el.getBoundingClientRect(); if (r.top < window.innerHeight && r.bottom > 0) { if (el._anim) { try { el._anim.cancel(); } catch (e) {} } el.style.opacity = '1'; el.style.transform = 'none'; el._r = true; } }); }, 1800);
+  }
+  componentDidUpdate() { this.setup(); }
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
