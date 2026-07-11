@@ -7,3 +7,11 @@
 # which is why only the hero photo showed and nothing else rendered.
 [build.processing]
   skip_processing = true
+
+# Prevent browsers/CDN from serving a stale cached copy of the site on first
+# visit. Without this, visitors could land on an old build (fake schedule,
+# blank sponsor tiles) until a second navigation forced a re-fetch.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"

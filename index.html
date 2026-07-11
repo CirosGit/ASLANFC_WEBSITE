@@ -6,6 +6,9 @@
 <script src="./support.js"></script>
 </head>
 <body>
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#0a0a0b"/><circle cx="50" cy="50" r="22" fill="none" stroke="#c9a24b" stroke-width="3"/><text x="50" y="59" font-family="sans-serif" font-size="20" font-weight="800" fill="#c9a24b" text-anchor="middle">AFC</text></svg>
+</template>
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -16,10 +19,13 @@
   html{scroll-behavior:smooth;}
   body{margin:0;background:#0a0a0b;color:#f4f4f3;font-family:'Hanken Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
   ::selection{background:rgba(201,162,75,0.3);color:#fff;}
-  input::placeholder{color:#6c6c72;}
+  a{color:#e3c277;text-decoration:none;}
+  a:hover{color:#f1d391;}
   @keyframes heroIn{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
   @keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
   @keyframes scrollPulse{0%,100%{opacity:0.25;}50%{opacity:1;}}
+  .ig-carousel{scrollbar-width:none;-ms-overflow-style:none;}
+  .ig-carousel::-webkit-scrollbar{display:none;}
   /* Reveal: a re-render loop keeps restarting the inline CSS transitions and
      strands them at opacity:0 — and a running transition outranks even !important.
      So neutralise those transitions and drive the reveal with a CSS *animation*
@@ -39,7 +45,7 @@
     <div data-parallax="0.16" style="position:absolute;left:0;right:0;top:-10%;height:120%;will-change:transform;">
       <div style="position:absolute;inset:0;overflow:hidden;">
         <div style="position:absolute;top:50%;left:50%;width:135vh;height:135vw;transform:translate(-50%,-50%) rotate(90deg);background:url('assets/hero-huddle.png') center center / cover no-repeat;"></div>
-        <div style="position:absolute;inset:0;background:rgba(10,10,11,0.5);"></div>
+        <div style="position:absolute;inset:0;background:rgba(10,10,11,0.08);"></div>
       </div>
     </div>
     <div style="position:absolute;inset:0;background:linear-gradient(100deg, rgba(8,8,9,0.95) 0%, rgba(8,8,9,0.72) 42%, rgba(8,8,9,0.22) 72%, rgba(8,8,9,0.5) 100%);"></div>
@@ -87,7 +93,7 @@
       <!-- Schedule card -->
       <div data-reveal="1" style="opacity:0;transform:translateY(30px);transition:opacity .85s cubic-bezier(.2,.7,.2,1), transform .85s cubic-bezier(.2,.7,.2,1);background:#151518;border:1px solid rgba(255,255,255,0.07);border-radius:22px;padding:28px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;">
-          <h3 style="margin:0;font-size:18px;font-weight:800;letter-spacing:0.01em;color:#f4f4f3;text-transform:uppercase;">Upcoming Schedule</h3>
+          <h3 style="margin:0;font-size:18px;font-weight:800;letter-spacing:0.01em;color:#f4f4f3;text-transform:uppercase;">Training Schedule</h3>
           <a href="Schedule.dc.html" style="font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#c9a24b;text-decoration:none;text-transform:uppercase;" style-hover="color:#e3c277;">View all →</a>
         </div>
         <div style="display:flex;flex-direction:column;gap:10px;">
@@ -125,8 +131,8 @@
         <div style="display:flex;flex-direction:column;gap:8px;">
           <sc-for list="{{ players }}" as="p" hint-placeholder-count="4">
             <div style="display:flex;align-items:center;gap:13px;padding:9px 12px;border:1px solid rgba(255,255,255,0.06);border-radius:11px;background:#0f0f12;transition:border-color .25s ease;" style-hover="border-color:rgba(201,162,75,0.32);">
-              <span style="flex:none;width:30px;font-size:18px;font-weight:800;color:#c9a24b;text-align:center;">{{ p.n }}</span>
-              <div style="flex:1;"><div style="font-size:13.5px;font-weight:700;color:#f4f4f3;">{{ p.name }}</div><div style="font-size:11.5px;color:#86868c;">{{ p.pos }}</div></div>
+              <span style="flex:none;width:8px;height:8px;margin:0 11px;border-radius:50%;background:#c9a24b;"></span>
+              <div style="flex:1;font-size:13.5px;font-weight:700;color:#f4f4f3;">{{ p.name }}</div>
             </div>
           </sc-for>
         </div>
@@ -218,14 +224,25 @@
       </div>
       <a href="#" style="text-decoration:none;color:#e3c277;font-size:13.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border-bottom:1px solid rgba(201,162,75,0.4);padding-bottom:3px;">Follow on Instagram →</a>
     </div>
-    <div data-reveal="1" style="opacity:0;transform:translateY(30px);transition:opacity .85s cubic-bezier(.2,.7,.2,1), transform .85s cubic-bezier(.2,.7,.2,1);display:grid;grid-template-columns:repeat(6,1fr);gap:14px;">
-      <sc-for list="{{ igTiles }}" as="t" hint-placeholder-count="6">
-        <div style="aspect-ratio:4/5;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);">
-          <div style="width:100%;height:100%;transition:transform .6s cubic-bezier(.2,.7,.2,1);" style-hover="transform:scale(1.08);">
-            <dc-import name="Placeholder" sid="home-ig-{{ $index }}" label="{{ t }}" hint-size="100%,100%" style="width:100%;height:100%;display:block;"></dc-import>
-          </div>
-        </div>
-      </sc-for>
+    <div data-reveal="1" style="opacity:0;transform:translateY(30px);transition:opacity .85s cubic-bezier(.2,.7,.2,1), transform .85s cubic-bezier(.2,.7,.2,1);display:flex;gap:14px;overflow-x:auto;padding-bottom:6px;" class="ig-carousel">
+      <div style="flex:0 0 300px;aspect-ratio:4/5;border-radius:18px;overflow:hidden;scroll-snap-align:start;">
+        <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="home-ig-0" shape="rect" fit="contain" placeholder="Drop a photo" hint-size="100%,100%" style="width:100%;height:100%;display:block;"></x-import>
+      </div>
+      <div style="flex:0 0 300px;aspect-ratio:4/5;border-radius:18px;overflow:hidden;scroll-snap-align:start;">
+        <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="home-ig-1" shape="rect" fit="contain" placeholder="Drop a photo" hint-size="100%,100%" style="width:100%;height:100%;display:block;"></x-import>
+      </div>
+      <div style="flex:0 0 300px;aspect-ratio:4/5;border-radius:18px;overflow:hidden;scroll-snap-align:start;">
+        <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="home-ig-2" shape="rect" fit="contain" placeholder="Drop a photo" hint-size="100%,100%" style="width:100%;height:100%;display:block;"></x-import>
+      </div>
+      <div style="flex:0 0 300px;aspect-ratio:4/5;border-radius:18px;overflow:hidden;scroll-snap-align:start;">
+        <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="home-ig-3" shape="rect" fit="contain" placeholder="Drop a photo" hint-size="100%,100%" style="width:100%;height:100%;display:block;"></x-import>
+      </div>
+      <div style="flex:0 0 300px;aspect-ratio:4/5;border-radius:18px;overflow:hidden;scroll-snap-align:start;">
+        <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="home-ig-4" shape="rect" fit="contain" placeholder="Drop a photo" hint-size="100%,100%" style="width:100%;height:100%;display:block;"></x-import>
+      </div>
+      <div style="flex:0 0 300px;aspect-ratio:4/5;border-radius:18px;overflow:hidden;scroll-snap-align:start;">
+        <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="home-ig-5" shape="rect" fit="contain" placeholder="Drop a photo" hint-size="100%,100%" style="width:100%;height:100%;display:block;"></x-import>
+      </div>
     </div>
   </section>
 
@@ -235,10 +252,10 @@
       <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.2em;color:#c9a24b;text-transform:uppercase;">Our proud partners</div>
       <h2 style="margin:14px 0 0;font-size:clamp(28px,3.4vw,40px);font-weight:800;letter-spacing:-0.02em;color:#f4f4f3;">Backed by the community.</h2>
     </div>
-    <div data-reveal="1" style="opacity:0;transform:translateY(30px);transition:opacity .85s cubic-bezier(.2,.7,.2,1), transform .85s cubic-bezier(.2,.7,.2,1);display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
-      <sc-for list="{{ sponsors }}" as="sp" hint-placeholder-count="8">
-        <div style="height:104px;display:flex;align-items:center;justify-content:center;background:#141417;border:1px solid rgba(255,255,255,0.07);border-radius:16px;overflow:hidden;padding:16px;transition:all .25s ease;" style-hover="border-color:rgba(201,162,75,0.35);background:#18181c;transform:translateY(-3px);">
-          <dc-import name="Placeholder" sid="home-sponsor-{{ $index }}" label="SPONSOR LOGO" hint-size="100%,100%" style="width:100%;height:100%;display:block;border-radius:8px;overflow:hidden;"></dc-import>
+    <div data-reveal="1" style="opacity:0;transform:translateY(30px);transition:opacity .85s cubic-bezier(.2,.7,.2,1), transform .85s cubic-bezier(.2,.7,.2,1);display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:700px;margin:0 auto;">
+      <sc-for list="{{ sponsors }}" as="sp" hint-placeholder-count="2">
+        <div style="height:104px;display:flex;align-items:center;justify-content:center;background:#141417;border:1px solid rgba(255,255,255,0.07);border-radius:16px;overflow:hidden;transition:all .25s ease;" style-hover="border-color:rgba(201,162,75,0.35);background:#18181c;transform:translateY(-3px);">
+          <dc-import name="Placeholder" sid="sponsors-logo-{{ $index }}" label="SPONSOR LOGO — OPEN SPOT" hint-size="100%,100%" style="width:100%;height:100%;display:block;"></dc-import>
         </div>
       </sc-for>
       <a href="Sponsors.dc.html" style="height:104px;display:flex;align-items:center;justify-content:center;text-align:center;background:linear-gradient(180deg,#1a1610,#141417);border:1px solid rgba(201,162,75,0.3);border-radius:16px;text-decoration:none;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.12em;color:#e3c277;text-transform:uppercase;transition:all .25s ease;" style-hover="background:rgba(201,162,75,0.1);transform:translateY(-3px);">Become a Sponsor →</a>
@@ -339,17 +356,13 @@ class Component extends DCLogic {
     return {
       rootRef: this.rootRef,
       schedule: [
-        { m: 'MAY', d: '18', title: 'Training Session', time: '6:00 PM', loc: 'Orlando, FL', tag: 'TRAINING', tagBg: 'rgba(201,162,75,0.15)', tagColor: '#e3c277' },
-        { m: 'MAY', d: '21', title: 'Friendly Match', time: '7:30 PM', loc: 'Kissimmee, FL', tag: 'FRIENDLY', tagBg: 'rgba(86,132,224,0.16)', tagColor: '#93b2f0' },
-        { m: 'MAY', d: '25', title: 'USSL League Match', time: '7:00 PM', loc: 'Orlando, FL', tag: 'MATCH', tagBg: 'rgba(208,40,46,0.16)', tagColor: '#f0888b' },
-        { m: 'MAY', d: '28', title: 'Training Session', time: '6:00 PM', loc: 'Orlando, FL', tag: 'TRAINING', tagBg: 'rgba(201,162,75,0.15)', tagColor: '#e3c277' },
-        { m: 'JUN', d: '01', title: 'USSL League Match', time: '7:00 PM', loc: 'Orlando, FL', tag: 'MATCH', tagBg: 'rgba(208,40,46,0.16)', tagColor: '#f0888b' },
+        { m: 'MON–THU', d: '7PM', title: 'Training Session', time: 'Weekly', loc: 'Heroes Park, Lake Nona', tag: 'TRAINING', tagBg: 'rgba(201,162,75,0.15)', tagColor: '#e3c277' },
       ],
       players: [
-        { n: '7', name: 'John Smith', pos: 'Midfielder' },
-        { n: '10', name: 'Carlos Martinez', pos: 'Forward' },
-        { n: '4', name: 'David Lopez', pos: 'Defender' },
-        { n: '1', name: 'Michael Johnson', pos: 'Goalkeeper' },
+        { name: 'Juan Eslava' },
+        { name: 'Ruben Ramos' },
+        { name: 'Jose Arevalo' },
+        { name: 'Oscar Azocar' },
       ],
       tiers: [
         { amt: '$25', desc: 'Training equipment' },
@@ -358,10 +371,10 @@ class Component extends DCLogic {
         { amt: 'Custom', desc: 'Choose your amount' },
       ],
       stats: [
-        { v: 28, suffix: '', l: 'Players Registered' },
-        { v: 12, suffix: '', l: 'Matches Played' },
-        { v: 31, suffix: '', l: 'Goals Scored' },
-        { v: 150, suffix: '+', l: 'Community Hours' },
+        { v: 20, suffix: '', l: 'Players Registered' },
+        { v: 4, suffix: '', l: 'Training Days / Week' },
+        { v: 2024, suffix: '', l: 'Club Founded' },
+        { v: 1, suffix: '', l: 'Home Training Ground' },
       ],
       news: [
         { cat: 'Club News', date: 'May 10', title: 'Aslan FC announces open tryouts for the 2026 season', img: 'TRYOUTS ANNOUNCEMENT', delay: '0' },
@@ -369,7 +382,7 @@ class Component extends DCLogic {
         { cat: 'Match Recap', date: 'Apr 30', title: 'Aslan FC vs Orlando United — full match recap', img: 'MATCH RECAP', delay: '240' },
       ],
       igTiles: ['MATCH DAY', 'THE SQUAD', 'TRAINING', 'SUPPORTERS', 'GOAL!', 'ACADEMY'],
-      sponsors: ['AdventHealth', 'Nike', 'BodyArmor', 'Soccer.com', 'Puma', 'Publix', 'Gatorade'],
+      sponsors: ['Open spot', 'Open spot'],
     };
   }
 }
